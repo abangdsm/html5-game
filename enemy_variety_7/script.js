@@ -12,10 +12,17 @@ document.addEventListener('DOMContentLoaded', function(){
             this.width = width;
             this.height = height;
             this.enemies = [];
-            this.#addnewEnemy();
+            this.enemyInterval = 400;
+            this.enemyTimer = 0;
             console.log(this.enemies);
         }
         update(){
+            if(this.enemyTimer > this.enemyInterval){
+                this.#addnewEnemy();
+                this.enemyTimer = 0;
+            }else{
+                this.enemyTimer++;
+            }
             this.enemies.forEach(object => object.update());
         }
         draw(){
@@ -29,8 +36,8 @@ document.addEventListener('DOMContentLoaded', function(){
     class Enemy {
         constructor(game){
             this.game = game;
-            this.x = 100;
-            this.y = 100;
+            this.x = this.game.width;
+            this.y = Math.random() * this.game.height;
             this.width = 100;
             this.height = 100;
         }
