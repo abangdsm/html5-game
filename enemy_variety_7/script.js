@@ -12,40 +12,54 @@ document.addEventListener('DOMContentLoaded', function(){
             this.width = width;
             this.height = height;
             this.enemies = [];
-            this.enemyInterval = 400;
+            this.enemyInterval = 100;
             this.enemyTimer = 0;
-            console.log(this.enemies);
         }
-        update(){
+        update(deltaTime){
+            this.enemies = this.enemies.filter(object => !object.markedForDeletion);
             if(this.enemyTimer > this.enemyInterval){
                 this.#addnewEnemy();
                 this.enemyTimer = 0;
+                console.log(this.enemies);
             }else{
                 this.enemyTimer++;
             }
             this.enemies.forEach(object => object.update());
         }
         draw(){
-            this.enemies.forEach(object => object.draw());
+            this.enemies.forEach(object => object.draw(this.ctx));
         }
         #addnewEnemy(){
-            this.enemies.push(new Enemy(this));
+            this.enemies.push(new Worm(this));
         }
     }
 
     class Enemy {
         constructor(game){
             this.game = game;
-            this.x = this.game.width;
-            this.y = Math.random() * this.game.height;
-            this.width = 100;
-            this.height = 100;
+            // console.log(this.game);
+            this.markedForDeletion = false;
         }
         update(){
             this.x--;
+            // remove enemies
+            if(this.x < 0 - this.width) this.markedForDeletion = true;
         }
-        draw(){
-            ctx.fillRect(this.x, this.y, this.width, this.height);
+        draw(ctx){
+            // ctx.fillRect(this.x, this.y, this.width, this.height);
+            ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        }
+    }
+
+    class Worm extends Enemy {
+        constructor(game){
+            super(game);
+            this.x = this.game.width;
+            this.y = Math.random() * this.game.height;
+            this.width = 200;
+            this.height = 100;
+            this.image = worm;
+            console.log(this.image);
         }
     }
 
@@ -55,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function(){
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const deltaTime = timeStamp - lastTime;
         lastTime = timeStamp;
-        game.update();
+        game.update(deltaTime);
         game.draw();
         // some code
         requestAnimationFrame(animate);
